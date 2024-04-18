@@ -1,4 +1,4 @@
-module github.com/TheJubadze/OtusGolangPro/tree/master/hw01_hello_otus
+module github.com/TheJubadze/OtusGolangPro/hw01_hello_otus
 
 go 1.19
 
