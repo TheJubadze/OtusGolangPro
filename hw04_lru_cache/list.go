@@ -1,11 +1,12 @@
 package hw04lrucache
 
 import (
-	"strconv"
+	"fmt"
 	"strings"
 )
 
 type List interface {
+	fmt.Stringer
 	Len() int
 	Front() *ListItem
 	Back() *ListItem
@@ -74,11 +75,21 @@ func (l *list) PushBack(v interface{}) *ListItem {
 }
 
 func (l *list) Remove(i *ListItem) {
+	l.len--
+	if l.front == i {
+		l.front = i.Next
+		l.front.Prev = nil
+		return
+	}
+	if l.back == i {
+		l.back = i.Prev
+		l.back.Next = nil
+		return
+	}
 	prev := i.Prev
 	next := i.Next
 	prev.Next = next
 	next.Prev = prev
-	l.len--
 }
 
 func (l *list) MoveToFront(i *ListItem) {
@@ -104,7 +115,7 @@ func (l *list) String() string {
 	arr := make([]string, l.len)
 	node := l.front
 	for i := 0; node != nil; i, node = i+1, node.Next {
-		arr[i] = strconv.Itoa((node.Value.(int)))
+		arr[i] = fmt.Sprintf("%v", node.Value)
 	}
 	return "[" + strings.Join(arr, ", ") + "]"
 }
