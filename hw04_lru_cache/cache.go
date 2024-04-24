@@ -45,10 +45,10 @@ func (cache *lruCache) Set(key Key, value interface{}) bool {
 	cache.items[key] = item
 	cache.keys[item] = key
 	if cache.queue.Len() > cache.capacity {
-		back := cache.queue.Back()
-		delete(cache.items, cache.keys[back])
-		delete(cache.keys, back)
-		cache.queue.Remove(back)
+		oldest := cache.queue.Back()
+		delete(cache.items, cache.keys[oldest])
+		delete(cache.keys, oldest)
+		cache.queue.Remove(oldest)
 	}
 	return false
 }

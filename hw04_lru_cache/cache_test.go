@@ -89,12 +89,30 @@ func TestCache(t *testing.T) {
 		require.Nil(t, val)
 		require.Equal(t, "[]", c.String())
 	})
+
+	t.Run("lru removing", func(t *testing.T) {
+		c := NewCache(3)
+
+		c.Set("aaa", 100)
+		c.Set("bbb", 200)
+		c.Set("aaa", 300)
+		c.Set("ccc", 400)
+
+		val, ok := c.Get("aaa")
+		require.True(t, ok)
+		require.Equal(t, 300, val)
+
+		c.Set("ddd", 500)
+
+		_, ok = c.Get("bbb")
+		require.False(t, ok)
+	})
 }
 
 func TestCacheMultithreading(t *testing.T) {
 	c := NewCache(10)
 	wg := &sync.WaitGroup{}
-	wg.Add(2)
+	wg.Add(3)
 
 	go func() {
 		defer wg.Done()
@@ -107,6 +125,13 @@ func TestCacheMultithreading(t *testing.T) {
 		defer wg.Done()
 		for i := 0; i < 1_000_000; i++ {
 			c.Get(Key(strconv.Itoa(rand.Intn(1_000_000))))
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		for i := 0; i < 1_000_000; i++ {
+			c.Clear()
 		}
 	}()
 
