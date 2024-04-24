@@ -53,31 +53,31 @@ func TestCache(t *testing.T) {
 		c := NewCache(5)
 
 		c.Set("aaa", 100)
-		require.Equal(t, "[100]", c.String())
+		require.Equal(t, "[{aaa 100}]", c.String())
 
 		c.Set("bbb", 200)
-		require.Equal(t, "[200, 100]", c.String())
+		require.Equal(t, "[{bbb 200}, {aaa 100}]", c.String())
 
 		c.Set("aaa", 300)
-		require.Equal(t, "[300, 200]", c.String())
+		require.Equal(t, "[{aaa 300}, {bbb 200}]", c.String())
 
 		c.Set("ccc", 400)
-		require.Equal(t, "[400, 300, 200]", c.String())
+		require.Equal(t, "[{ccc 400}, {aaa 300}, {bbb 200}]", c.String())
 
 		c.Set("ddd", 500)
-		require.Equal(t, "[500, 400, 300, 200]", c.String())
+		require.Equal(t, "[{ddd 500}, {ccc 400}, {aaa 300}, {bbb 200}]", c.String())
 
 		c.Set("eee", 600)
-		require.Equal(t, "[600, 500, 400, 300, 200]", c.String())
+		require.Equal(t, "[{eee 600}, {ddd 500}, {ccc 400}, {aaa 300}, {bbb 200}]", c.String())
 
 		c.Set("fff", 700)
-		require.Equal(t, "[700, 600, 500, 400, 300]", c.String())
+		require.Equal(t, "[{fff 700}, {eee 600}, {ddd 500}, {ccc 400}, {aaa 300}]", c.String())
 
 		c.Set("ggg", 800)
-		require.Equal(t, "[800, 700, 600, 500, 400]", c.String())
+		require.Equal(t, "[{ggg 800}, {fff 700}, {eee 600}, {ddd 500}, {ccc 400}]", c.String())
 
 		c.Set("hhh", 900)
-		require.Equal(t, "[900, 800, 700, 600, 500]", c.String())
+		require.Equal(t, "[{hhh 900}, {ggg 800}, {fff 700}, {eee 600}, {ddd 500}]", c.String())
 
 		val, ok := c.Get("aaa")
 		require.False(t, ok)

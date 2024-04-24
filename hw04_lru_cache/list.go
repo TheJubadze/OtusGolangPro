@@ -17,6 +17,7 @@ type List interface {
 }
 
 type ListItem struct {
+	fmt.Stringer
 	Value interface{}
 	Next  *ListItem
 	Prev  *ListItem
@@ -120,7 +121,11 @@ func (l *list) String() string {
 	arr := make([]string, l.len)
 	node := l.front
 	for i := 0; node != nil; i, node = i+1, node.Next {
-		arr[i] = fmt.Sprintf("%v", node.Value)
+		arr[i] = node.String()
 	}
 	return "[" + strings.Join(arr, ", ") + "]"
+}
+
+func (li *ListItem) String() string {
+	return fmt.Sprintf("%v", li.Value)
 }
