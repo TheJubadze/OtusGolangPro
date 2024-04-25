@@ -46,7 +46,7 @@ func (cache *lruCache) Set(key Key, value interface{}) bool {
 		cache.queue.MoveToFront(item)
 		return true
 	}
-	if cache.queue.Len()+1 > cache.capacity {
+	if cache.queue.Len() >= cache.capacity {
 		oldest := cache.queue.Back()
 		delete(cache.items, oldest.Value.(cacheItem).key)
 		cache.queue.Remove(oldest)
@@ -77,5 +77,8 @@ func (cache *lruCache) Clear() {
 }
 
 func (cache *lruCache) String() string {
+	cache.mu.Lock()
+	defer cache.mu.Unlock()
+
 	return cache.queue.String()
 }

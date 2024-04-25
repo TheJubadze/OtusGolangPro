@@ -48,14 +48,14 @@ func (l *list) Back() *ListItem {
 func (l *list) PushFront(v interface{}) *ListItem {
 	newNode := new(ListItem)
 	newNode.Value = v
-	newNode.Next = l.front
-	if l.front != nil {
-		l.front.Prev = newNode
-	}
-	if l.back == nil {
+	if l.len < 1 {
+		l.front = newNode
 		l.back = newNode
+	} else {
+		newNode.Next = l.front
+		l.front.Prev = newNode
+		l.front = newNode
 	}
-	l.front = newNode
 	l.len++
 	return newNode
 }
@@ -63,14 +63,14 @@ func (l *list) PushFront(v interface{}) *ListItem {
 func (l *list) PushBack(v interface{}) *ListItem {
 	newNode := new(ListItem)
 	newNode.Value = v
-	newNode.Prev = l.back
-	if l.back != nil {
-		l.back.Next = newNode
-	}
-	if l.front == nil {
+	if l.len < 1 {
 		l.front = newNode
+		l.back = newNode
+	} else {
+		newNode.Prev = l.back
+		l.back.Next = newNode
+		l.back = newNode
 	}
-	l.back = newNode
 	l.len++
 	return newNode
 }
