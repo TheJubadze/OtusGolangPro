@@ -1,9 +1,5 @@
 package hw06pipelineexecution
 
-import (
-	"sync"
-)
-
 type (
 	In  = <-chan interface{}
 	Out = In
@@ -13,31 +9,7 @@ type (
 type Stage func(in In) (out Out)
 
 func ExecutePipeline(in In, done In, stages ...Stage) Out {
-	var wg sync.WaitGroup
-	out := make(Bi)
-
-	multiplex := func(c <-chan interface{}) {
-		wg.Add(1)
-		defer wg.Done()
-		for i := range c {
-			select {
-			case <-done:
-				return
-			case out <- i:
-			}
-		}
-	}
-
-	for i := 0; i < 2; i++ {
-		go multiplex(runPipeline(in, done, stages))
-	}
-
-	go func() {
-		wg.Wait()
-		close(out)
-	}()
-
-	return out
+	return runPipeline(in, done, stages)
 }
 
 func runPipeline(in In, done In, stages []Stage) Out {
