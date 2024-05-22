@@ -25,11 +25,13 @@ func runPipeline(in In, done In, stages []Stage) Out {
 
 		go func(stageIn Bi, outCh In) {
 			defer close(stageIn)
+			defer func() {
+				for range outCh {
+				}
+			}()
 			for {
 				select {
 				case <-done:
-					for range outCh {
-					}
 					return
 				case v, ok := <-outCh:
 					if !ok {
@@ -37,8 +39,6 @@ func runPipeline(in In, done In, stages []Stage) Out {
 					}
 					select {
 					case <-done:
-						for range outCh {
-						}
 						return
 					case stageIn <- v:
 					}
