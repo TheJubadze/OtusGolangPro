@@ -28,12 +28,20 @@ func runPipeline(in In, done In, stages []Stage) Out {
 			for {
 				select {
 				case <-done:
+					for range outCh {
+					}
 					return
 				case v, ok := <-outCh:
 					if !ok {
 						return
 					}
-					stageIn <- v
+					select {
+					case <-done:
+						for range outCh {
+						}
+						return
+					case stageIn <- v:
+					}
 				}
 			}
 		}(stageIn, outCh)
