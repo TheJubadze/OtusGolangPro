@@ -17,6 +17,7 @@ with new line)
 UNSET is ()
 ADDED is (from original env)
 EMPTY is ()
+BAR= is ()
 arguments are arg1=1 arg2=2'
 
 [ "${result}" = "${expected}" ] || (echo -e "invalid output: ${result}" && exit 1)
