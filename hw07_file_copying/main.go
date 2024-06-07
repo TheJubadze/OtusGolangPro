@@ -21,6 +21,7 @@ func main() {
 	flag.Parse()
 	err := Copy(from, to, offset, limit)
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
+	log.Print("done")
 }

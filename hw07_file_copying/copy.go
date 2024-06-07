@@ -22,7 +22,7 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 	defer closeFile(srcFile)
 
 	fi, err := srcFile.Stat()
-	if err != nil {
+	if err != nil || fi.Size() <= 0 {
 		return ErrUnsupportedFile
 	}
 

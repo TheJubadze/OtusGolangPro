@@ -9,6 +9,26 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestRandom(t *testing.T) {
+	const fromName = "/dev/urandom"
+	to, err := os.CreateTemp(".", "tmp.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := to.Close(); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.Remove(to.Name()); err != nil {
+			t.Fatal(err)
+		}
+	}()
+
+	err = Copy(fromName, to.Name(), offset, limit)
+
+	require.Equal(t, ErrUnsupportedFile, err, "wrong or no error returned")
+}
+
 func TestCopy(t *testing.T) {
 	tests := []struct {
 		offset int64
