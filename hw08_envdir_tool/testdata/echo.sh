@@ -6,4 +6,5 @@ FOO is (${FOO})
 UNSET is (${UNSET})
 ADDED is (${ADDED})
 EMPTY is (${EMPTY})
+BAR= is (${UNSET})
 arguments are $*"
