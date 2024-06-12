@@ -72,6 +72,6 @@ func readEntry(filePath string) (EnvValue, error) {
 func closeFile(file *os.File) {
 	err := file.Close()
 	if err != nil {
-		log.Panic(err)
+		log.Println(err)
 	}
 }
