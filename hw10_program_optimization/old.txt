@@ -1,0 +1,7 @@
+goos: windows
+goarch: amd64
+pkg: github.com/TheJubadze/OtusGolangPro/hw10_program_optimization
+cpu: Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz
+BenchmarkGetDomainStat-12    	     218	   4985683 ns/op	 1484530 B/op	   13976 allocs/op
+PASS
+ok  	github.com/TheJubadze/OtusGolangPro/hw10_program_optimization	8.561s
