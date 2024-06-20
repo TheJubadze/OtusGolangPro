@@ -11,46 +11,21 @@ import (
 )
 
 type User struct {
-	ID       int
-	Name     string
-	Username string
-	Email    string
-	Phone    string
-	Password string
-	Address  string
+	Email string
 }
 
 type DomainStat map[string]int
 
 func GetDomainStat(r io.Reader, domain string) (DomainStat, error) {
-	u, err := getUsers(r)
-	if err != nil {
-		return nil, fmt.Errorf("get users error: %w", err)
-	}
-	return countDomains(u, domain)
-}
-
-type users [100_000]User
-
-func getUsers(r io.Reader) (result users, err error) {
 	scanner := bufio.NewScanner(r)
-	for i := 0; scanner.Scan(); i++ {
-		if err = json.Unmarshal(scanner.Bytes(), &result[i]); err != nil {
-			return
-		}
-	}
-
-	if err = scanner.Err(); err != nil {
-		return
-	}
-	return
-}
-
-func countDomains(u users, domain string) (DomainStat, error) {
+	user := User{}
 	result := make(DomainStat)
 	domain = "." + domain
 
-	for _, user := range u {
+	for i := 0; scanner.Scan(); i++ {
+		if err := json.Unmarshal(scanner.Bytes(), &user); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal: %w", err)
+		}
 		email := user.Email
 		atIndex := strings.LastIndex(email, "@")
 		if atIndex == -1 {
@@ -63,6 +38,11 @@ func countDomains(u users, domain string) (DomainStat, error) {
 			result[lowerEmailDomain]++
 		}
 	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("failed to scan: %w", err)
+	}
+
 	return result, nil
 }
 
