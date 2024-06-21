@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func validateInt(i int, parts []string) error {
+func validateInt(fieldName string, i int, parts []string) Error {
 	key := parts[0]
 	valueStr := parts[1]
 
@@ -14,33 +14,42 @@ func validateInt(i int, parts []string) error {
 	case "min":
 		value, err := strconv.Atoi(valueStr)
 		if err != nil {
-			return fmt.Errorf("invalid min value: %s", valueStr)
+			return &TagError{Key: key, Value: valueStr, Err: err}
 		}
 		if i < value {
-			return fmt.Errorf("value %d is less than min %d", i, value)
+			return &ValidationError{
+				Field: fieldName,
+				Err:   fmt.Errorf("value %d is less than min %d", i, value),
+			}
 		}
 	case "max":
 		value, err := strconv.Atoi(valueStr)
 		if err != nil {
-			return fmt.Errorf("invalid max value: %s", valueStr)
+			return &TagError{Key: key, Value: valueStr, Err: err}
 		}
 		if i > value {
-			return fmt.Errorf("value %d is greater than max %d", i, value)
+			return &ValidationError{
+				Field: fieldName,
+				Err:   fmt.Errorf("value %d is greater than max %d", i, value),
+			}
 		}
 	case "in":
 		inValues := strings.Split(valueStr, ",")
 		for _, str := range inValues {
 			value, err := strconv.Atoi(str)
 			if err != nil {
-				return fmt.Errorf("invalid in value: %s", str)
+				return &TagError{Key: key, Value: str, Err: err}
 			}
 			if i == value {
 				return nil
 			}
 		}
-		return fmt.Errorf("value %d is not in %s", i, valueStr)
+		return &ValidationError{
+			Field: fieldName,
+			Err:   fmt.Errorf("value %d is not in %s", i, valueStr),
+		}
 	default:
-		return fmt.Errorf("unknown validation key: %s", key)
+		return &TagError{Key: key, Value: "unknown key", Err: fmt.Errorf("unknown key")}
 	}
 	return nil
 }

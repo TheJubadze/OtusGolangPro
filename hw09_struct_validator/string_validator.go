@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func validateString(s string, parts []string) error {
+func validateString(fieldName string, s string, parts []string) Error {
 	key := parts[0]
 	valueStr := parts[1]
 
@@ -15,18 +15,24 @@ func validateString(s string, parts []string) error {
 	case "len":
 		value, err := strconv.Atoi(valueStr)
 		if err != nil {
-			return fmt.Errorf("invalid len value: %s", valueStr)
+			return &TagError{Key: key, Value: valueStr, Err: err}
 		}
 		if len(s) != value {
-			return fmt.Errorf("length of '%s' is %d, expected %d", s, len(s), value)
+			return &ValidationError{
+				Field: fieldName,
+				Err:   fmt.Errorf("length of '%s' is %d, expected %d", s, len(s), value),
+			}
 		}
 	case "regexp":
 		re, err := regexp.Compile(valueStr)
 		if err != nil {
-			return fmt.Errorf("invalid regexp pattern: %s", valueStr)
+			return &TagError{Key: key, Value: valueStr, Err: err}
 		}
 		if !re.MatchString(s) {
-			return fmt.Errorf("'%s' does not match pattern %s", s, valueStr)
+			return &ValidationError{
+				Field: fieldName,
+				Err:   fmt.Errorf("'%s' does not match pattern %s", s, valueStr),
+			}
 		}
 	case "in":
 		inValues := strings.Split(valueStr, ",")
@@ -35,9 +41,12 @@ func validateString(s string, parts []string) error {
 				return nil
 			}
 		}
-		return fmt.Errorf("'%s' is not in %s", s, valueStr)
+		return &ValidationError{
+			Field: fieldName,
+			Err:   fmt.Errorf("'%s' is not in %s", s, valueStr),
+		}
 	default:
-		return fmt.Errorf("unknown validation key: %s", key)
+		return &TagError{Key: key, Value: "unknown key", Err: fmt.Errorf("unknown key")}
 	}
 	return nil
 }

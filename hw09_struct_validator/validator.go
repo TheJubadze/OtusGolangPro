@@ -3,14 +3,10 @@ package hw09structvalidator
 import (
 	"errors"
 	"fmt"
+	"log"
 	"reflect"
 	"strings"
 )
-
-type ValidationError struct {
-	Field string
-	Err   error
-}
 
 type ValidationErrors []ValidationError
 
@@ -36,9 +32,14 @@ func Validate(val interface{}) error {
 		if field.PkgPath == "" {
 			tag := field.Tag.Get("validate")
 			if tag != "" {
-				err := validateField(field.Name, v.Field(i).Interface(), tag)
-				if err != nil {
-					validationErrors = append(validationErrors, ValidationError{Field: field.Name, Err: err})
+				errs := validateField(field.Name, v.Field(i).Interface(), tag)
+				for _, err := range errs {
+					var e *ValidationError
+					if errors.As(err, &e) && e.IsValidation() {
+						validationErrors = append(validationErrors, *e)
+					} else {
+						log.Default().Printf("error validating field '%s': %v", field.Name, err)
+					}
 				}
 			}
 		}
@@ -51,13 +52,13 @@ func Validate(val interface{}) error {
 	return nil
 }
 
-func validateField(fieldName string, field any, tag string) error {
+func validateField(fieldName string, field any, tag string) []Error {
 	switch v := reflect.ValueOf(field); v.Kind() {
 	case reflect.Int, reflect.String:
 		return validateValue(fieldName, v, tag)
 	case reflect.Slice:
 		return validateSlice(fieldName, v, tag)
 	default:
-		return fmt.Errorf("unsupported type for field '%s': %T", fieldName, field)
+		return []Error{&TagError{Key: fieldName, Value: tag, Err: fmt.Errorf("unsupported type for field '%s': %T", fieldName, field)}}
 	}
 }

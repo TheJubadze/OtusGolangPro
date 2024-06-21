@@ -5,17 +5,14 @@ import (
 	"reflect"
 )
 
-func validateSlice(fieldName string, slice reflect.Value, tag string) error {
-	var validationErrors []error
+func validateSlice(fieldName string, slice reflect.Value, tag string) []Error {
+	var errors []Error
 	for i := 0; i < slice.Len(); i++ {
 		elem := slice.Index(i).Interface()
 		if err := validateField(fmt.Sprintf("%s[%d]", fieldName, i), elem, tag); err != nil {
-			validationErrors = append(validationErrors, fmt.Errorf("index %d: %w", i, err))
+			errors = append(errors, err...)
 		}
 	}
 
-	if len(validationErrors) > 0 {
-		return fmt.Errorf("slice validation errors: %v", validationErrors)
-	}
-	return nil
+	return errors
 }
