@@ -1,26 +1,21 @@
 package app
 
 import (
-	"context"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/storage"
 )
 
-type App struct { // TODO
+type (
+	Storage = storage.Storage
+)
+
+type App struct {
+	storage Storage
 }
 
-type Logger interface { // TODO
+func New(storage Storage) *App {
+	return &App{storage: storage}
 }
 
-type Storage interface { // TODO
+func (a *App) Storage() storage.Storage {
+	return a.storage
 }
-
-func New(logger Logger, storage Storage) *App {
-	return &App{}
-}
-
-func (a *App) CreateEvent(ctx context.Context, id, title string) error {
-	// TODO
-	return nil
-	// return a.storage.CreateEvent(storage.Event{ID: id, Title: title})
-}
-
-// TODO

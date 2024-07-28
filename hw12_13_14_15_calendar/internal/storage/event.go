@@ -1,7 +1,14 @@
 package storage
 
 type Event struct {
-	ID    string
+	ID    int
 	Title string
-	// TODO
+	Time  string
+}
+
+type Storage interface {
+	AddEvent(event Event) error
+	UpdateEvent(event Event) error
+	DeleteEvent(id int) error
+	ListEvents() ([]Event, error)
 }
