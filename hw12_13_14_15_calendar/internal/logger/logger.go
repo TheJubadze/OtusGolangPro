@@ -1,20 +1,23 @@
 package logger
 
-import "fmt"
+import (
+	"github.com/sirupsen/logrus"
+)
 
-type Logger struct { // TODO
+var log *logrus.Logger
+
+func Setup(logLevel string) {
+	log = logrus.New()
+	level, err := logrus.ParseLevel(logLevel)
+	if err != nil {
+		log.Fatalf("Error parsing log level: %s", err)
+	}
+	log.SetLevel(level)
+	log.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp: true,
+	})
 }
 
-func New(level string) *Logger {
-	return &Logger{}
+func Log() *logrus.Logger {
+	return log
 }
-
-func (l Logger) Info(msg string) {
-	fmt.Println(msg)
-}
-
-func (l Logger) Error(msg string) {
-	// TODO
-}
-
-// TODO
