@@ -20,9 +20,10 @@ type serverConfig struct {
 }
 
 type config struct {
-	Logger  loggerConfig  `mapstructure:"logger"`
-	Storage storageConfig `mapstructure:"storage"`
-	Server  serverConfig  `mapstructure:"server"`
+	Logger     loggerConfig  `mapstructure:"logger"`
+	Storage    storageConfig `mapstructure:"storage"`
+	HttpServer serverConfig  `mapstructure:"httpserver"`
+	GrpcServer serverConfig  `mapstructure:"grpcserver"`
 }
 
 var Config = &config{}

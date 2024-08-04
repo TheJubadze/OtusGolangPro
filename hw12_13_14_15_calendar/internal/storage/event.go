@@ -1,14 +1,45 @@
 package storage
 
+import (
+	"time"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
+)
+
 type Event struct {
-	ID    int
-	Title string
-	Time  string
+	ID    int       `db:"id"`
+	Title string    `db:"title"`
+	Time  time.Time `db:"time"`
+}
+
+// EventProto is the protobuf representation of Event
+type EventProto struct {
+	ID    int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Title string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Time  *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=time,proto3" json:"time,omitempty"`
+}
+
+// ToProto converts Event to its protobuf representation
+func (e *Event) ToProto() *EventProto {
+	return &EventProto{
+		ID:    int32(e.ID),
+		Title: e.Title,
+		Time:  timestamppb.New(e.Time),
+	}
+}
+
+// FromProto converts EventProto to Event
+func (proto *EventProto) FromProto() *Event {
+	e := Event{}
+	e.ID = int(proto.ID)
+	e.Title = proto.Title
+	e.Time = proto.Time.AsTime()
+	return &e
 }
 
 type Storage interface {
 	AddEvent(event Event) error
 	UpdateEvent(event Event) error
 	DeleteEvent(id int) error
-	ListEvents() ([]Event, error)
+	ListEvents(time.Time, int) ([]Event, error)
 }
