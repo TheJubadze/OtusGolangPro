@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package storage;
+
+option go_package = "./pb";
+
+import "google/protobuf/timestamp.proto";
+
+message Event {
+  int32 id = 1;
+  string title = 2;
+  google.protobuf.Timestamp time = 3;
+}
+
+message AddEventRequest {
+  Event event = 1;
+}
+
+message UpdateEventRequest {
+  Event event = 1;
+}
+
+message DeleteEventRequest {
+  int32 id = 1;
+}
+
+message ListEventsRequest {
+  string startDate = 1;
+  int32 days = 2;
+}
+
+message ListEventsResponse {
+  repeated Event events = 1;
+}
+
+service EventService {
+  rpc AddEvent (AddEventRequest) returns (Event);
+  rpc UpdateEvent (UpdateEventRequest) returns (Event);
+  rpc DeleteEvent (DeleteEventRequest) returns (Event);
+  rpc ListEvents (ListEventsRequest) returns (ListEventsResponse);
+}

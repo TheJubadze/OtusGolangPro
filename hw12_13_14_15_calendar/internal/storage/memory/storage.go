@@ -3,6 +3,7 @@ package memorystorage
 import (
 	"errors"
 	"sync"
+	"time"
 
 	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/storage"
 )
@@ -50,11 +51,14 @@ func (s *InMemoryStorage) DeleteEvent(id int) error {
 	return nil
 }
 
-func (s *InMemoryStorage) ListEvents() ([]Event, error) {
+func (s *InMemoryStorage) ListEvents(startDate time.Time, days int) ([]storage.Event, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	events := make([]Event, 0, len(s.events))
 	for _, event := range s.events {
+		if event.Time.Before(startDate) || event.Time.After(startDate.AddDate(0, 0, days)) {
+			continue
+		}
 		events = append(events, event)
 	}
 	return events, nil

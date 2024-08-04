@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/storage"
 	"github.com/jmoiron/sqlx"
@@ -39,12 +40,15 @@ func (s *SQLStorage) Close() error {
 }
 
 func (s *SQLStorage) AddEvent(event storage.Event) error {
-	_, err := s.db.ExecContext(context.Background(), "INSERT INTO events (title, time) VALUES (:Title, :Time)", event)
-	return err
+	_, err := s.db.NamedExecContext(context.Background(), "INSERT INTO events (title, time) VALUES (:title, :time)", event)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *SQLStorage) UpdateEvent(event storage.Event) error {
-	result, err := s.db.ExecContext(context.Background(), "UPDATE events SET title = :Title, time = :Time WHERE id = ID", event)
+	result, err := s.db.NamedExecContext(context.Background(), "UPDATE events SET title = :title, time = :time WHERE id = :id", event)
 	if err != nil {
 		return err
 	}
@@ -73,9 +77,9 @@ func (s *SQLStorage) DeleteEvent(id int) error {
 	return nil
 }
 
-func (s *SQLStorage) ListEvents() ([]storage.Event, error) {
+func (s *SQLStorage) ListEvents(startDate time.Time, daysCount int) ([]storage.Event, error) {
 	var events []storage.Event
-	err := s.db.SelectContext(context.Background(), &events, "SELECT id, title, time FROM events")
+	err := s.db.SelectContext(context.Background(), &events, "SELECT id, title, time FROM events where time between $1 and $2", startDate, startDate.AddDate(0, 0, daysCount))
 	if err != nil {
 		return nil, err
 	}

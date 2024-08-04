@@ -36,4 +36,11 @@ lint-fix:
 	gofumpt -l -w .
 	golangci-lint run --fix
 
+PROTO_DIR = ./proto
+PROTO_FILES = $(PROTO_DIR)/event.proto
+GENERATED_DIR = ./proto
+
+generate:
+	protoc --go_out=$(GENERATED_DIR) --go-grpc_out=$(GENERATED_DIR) $(PROTO_FILES)
+
 .PHONY: build run build-img run-img version test lint

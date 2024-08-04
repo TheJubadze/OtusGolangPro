@@ -4,20 +4,20 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var log *logrus.Logger
+var Log *logrus.Logger
 
 func Setup(logLevel string) {
-	log = logrus.New()
+	Log = logrus.New()
 	level, err := logrus.ParseLevel(logLevel)
 	if err != nil {
-		log.Fatalf("Error parsing log level: %s", err)
+		Log.Fatalf("Error parsing Log level: %s", err)
 	}
-	log.SetLevel(level)
-	log.SetFormatter(&logrus.TextFormatter{
-		FullTimestamp: true,
+	Log.SetLevel(level)
+	Log.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp:   true,
+		TimestampFormat: "2006-01-02 15:04:05",
+		ForceColors:     true,
+		DisableColors:   false,
+		DisableQuote:    true,
 	})
-}
-
-func Log() *logrus.Logger {
-	return log
 }

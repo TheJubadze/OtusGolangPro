@@ -1,8 +1,10 @@
 package internalhttp
 
 import (
-	"log"
 	"net/http"
+	"time"
+
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/logger"
 )
 
 type loggingResponseWriter struct {
@@ -13,19 +15,12 @@ type loggingResponseWriter struct {
 
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
 		lrw := &loggingResponseWriter{ResponseWriter: w, statusCode: http.StatusOK}
-
 		next.ServeHTTP(lrw, r)
+		duration := time.Since(start)
 
-		clientIP := r.RemoteAddr
-		method := r.Method
-		uri := r.RequestURI
-		protocol := r.Proto
-		statusCode := lrw.statusCode
-		contentLength := lrw.size
-		userAgent := r.UserAgent()
-
-		log.Printf("%s %s %s %s %d %d \"%s\"\n",
-			clientIP, method, uri, protocol, statusCode, contentLength, userAgent)
+		logger.Log.Infof("HTTP Request: clientIP=%s, method=%s, uri=%s, protocol=%s, statusCode=%d, contentLength=%d, userAgent=%s, duration=%dms",
+			r.RemoteAddr, r.Method, r.RequestURI, r.Proto, lrw.statusCode, lrw.size, r.UserAgent(), duration.Milliseconds())
 	})
 }
