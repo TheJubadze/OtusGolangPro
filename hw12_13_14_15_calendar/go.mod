@@ -1,8 +1,6 @@
 module github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar
 
-go 1.21
-
-toolchain go1.22.0
+go 1.22.6
 
 require (
 	github.com/golang/mock v1.6.0

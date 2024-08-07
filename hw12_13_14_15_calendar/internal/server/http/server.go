@@ -55,30 +55,22 @@ func (s *HttpServer) Stop(ctx context.Context) error {
 
 func (s *HttpServer) routes() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/hello", helloHandler)
-	mux.HandleFunc("/events", s.handleEvents)
+	mux.HandleFunc("GET /hello", helloHandler)
+	addEventsRoutes(mux, s)
 	return mux
+}
+
+func addEventsRoutes(mux *http.ServeMux, s *HttpServer) {
+	mux.HandleFunc("POST /events", s.addEventHandler)
+	mux.HandleFunc("PUT /events", s.updateEventHandler)
+	mux.HandleFunc("DELETE /events", s.deleteEventHandler)
+	mux.HandleFunc("GET /events", s.listEventsHandler)
 }
 
 func helloHandler(w http.ResponseWriter, _ *http.Request) {
 	_, err := w.Write([]byte("Hello, World!"))
 	if err != nil {
 		return
-	}
-}
-
-func (s *HttpServer) handleEvents(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPost:
-		s.addEventHandler(w, r)
-	case http.MethodPut:
-		s.updateEventHandler(w, r)
-	case http.MethodDelete:
-		s.deleteEventHandler(w, r)
-	case http.MethodGet:
-		s.listEventsHandler(w, r)
-	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
 
