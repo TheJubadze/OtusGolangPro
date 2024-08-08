@@ -7,9 +7,10 @@ import (
 )
 
 type Event struct {
-	ID    int       `db:"id"`
-	Title string    `db:"title"`
-	Time  time.Time `db:"time"`
+	ID               int       `db:"id"`
+	Title            string    `db:"title"`
+	Time             time.Time `db:"time"`
+	NotificationSent bool      `db:"notification_sent"`
 }
 
 // EventProto is the protobuf representation of Event
@@ -42,4 +43,7 @@ type Storage interface {
 	UpdateEvent(event Event) error
 	DeleteEvent(id int) error
 	ListEvents(time.Time, int) ([]Event, error)
+	ListEventsToNotify() ([]Event, error)
+	MarkEventsNotificationSent(ids []int) error
+	DeleteEventsOlderThan(years, months, days int) error
 }

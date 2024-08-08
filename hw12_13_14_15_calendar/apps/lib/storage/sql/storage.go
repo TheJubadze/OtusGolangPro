@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/storage"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/lib/storage"
+
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // PostgreSQL driver
 	"github.com/pressly/goose"
@@ -84,4 +85,43 @@ func (s *SQLStorage) ListEvents(startDate time.Time, daysCount int) ([]storage.E
 		return nil, err
 	}
 	return events, nil
+}
+
+func (s *SQLStorage) ListEventsToNotify() ([]storage.Event, error) {
+	var events []storage.Event
+	err := s.db.SelectContext(context.Background(), &events, "SELECT id, title, time FROM events where time < $1 and not notification_sent", time.Now())
+	if err != nil {
+		return nil, err
+	}
+	return events, nil
+}
+
+func (s *SQLStorage) MarkEventsNotificationSent(ids []int) error {
+	result, err := s.db.ExecContext(context.Background(), "UPDATE events SET notification_sent = true WHERE id IN $1", ids)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return errors.New("event not found")
+	}
+	return nil
+}
+
+func (s *SQLStorage) DeleteEventsOlderThan(years, months, days int) error {
+	result, err := s.db.ExecContext(context.Background(), "DELETE FROM events WHERE time > $1", time.Now().AddDate(-years, -months, -days))
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return errors.New("event not found")
+	}
+	return nil
 }

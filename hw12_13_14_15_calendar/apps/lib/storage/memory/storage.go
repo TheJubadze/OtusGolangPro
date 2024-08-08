@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/storage"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/lib/storage"
 )
 
 type Event = storage.Event
@@ -62,4 +62,42 @@ func (s *InMemoryStorage) ListEvents(startDate time.Time, days int) ([]storage.E
 		events = append(events, event)
 	}
 	return events, nil
+}
+
+func (s *InMemoryStorage) ListEventsToNotify() ([]storage.Event, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	events := make([]Event, 0, len(s.events))
+	for _, event := range s.events {
+		if event.NotificationSent {
+			continue
+		}
+		events = append(events, event)
+	}
+	return events, nil
+}
+
+func (s *InMemoryStorage) MarkEventsNotificationSent(ids []int) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	for _, id := range ids {
+		event, exists := s.events[id]
+		if !exists {
+			return errors.New("event not found")
+		}
+		event.NotificationSent = true
+		s.events[id] = event
+	}
+	return nil
+}
+
+func (s *InMemoryStorage) DeleteEventsOlderThan(years, months, days int) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	for id, event := range s.events {
+		if event.Time.Before(time.Now().AddDate(-years, -months, -days)) {
+			delete(s.events, id)
+		}
+	}
+	return nil
 }

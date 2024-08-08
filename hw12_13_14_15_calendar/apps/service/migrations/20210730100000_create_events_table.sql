@@ -100,6 +100,8 @@ VALUES
     ('Evening Work', '2024-08-14 21:00:00+00'),
     ('Night Meditation', '2024-08-14 23:30:00+00');
 
+ALTER TABLE "events" ADD COLUMN "notification_sent" boolean DEFAULT false;
+
 -- +goose Down
 
 DROP TABLE "events";

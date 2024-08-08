@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/proto/pb"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/proto/pb"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -66,7 +66,8 @@ func addEvent(client pb.EventServiceClient) {
 
 	_, err := client.AddEvent(context.Background(), &pb.AddEventRequest{Event: event})
 	if err != nil {
-		log.Fatalf("could not add event: %v", err)
+		log.Printf("could not add event: %v\n", err)
+		return
 	}
 	fmt.Println("Event added successfully!")
 }
@@ -91,7 +92,8 @@ func updateEvent(client pb.EventServiceClient) {
 
 	_, err := client.UpdateEvent(context.Background(), &pb.UpdateEventRequest{Event: event})
 	if err != nil {
-		log.Fatalf("could not update event: %v", err)
+		log.Printf("could not update event: %v\n", err)
+		return
 	}
 	fmt.Println("Event updated successfully!")
 }
@@ -104,7 +106,8 @@ func deleteEvent(client pb.EventServiceClient) {
 
 	_, err := client.DeleteEvent(context.Background(), &pb.DeleteEventRequest{Id: id})
 	if err != nil {
-		log.Fatalf("could not delete event: %v", err)
+		log.Printf("could not delete event: %v\n", err)
+		return
 	}
 	fmt.Println("Event deleted successfully!")
 }
@@ -123,7 +126,8 @@ func listEvents(client pb.EventServiceClient) {
 		Days:      days,
 	})
 	if err != nil {
-		log.Fatalf("could not list events: %v", err)
+		log.Printf("could not list events: %v\n", err)
+		return
 	}
 
 	fmt.Println("Events:")

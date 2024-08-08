@@ -9,8 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/app"
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/storage"
+	storage2 "github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/lib/storage"
+
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/app"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
@@ -19,12 +20,12 @@ func TestHttpServer(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockStorage := storage.NewMockStorage(ctrl)
+	mockStorage := storage2.NewMockStorage(ctrl)
 	application := app.New(mockStorage)
 	server := New(application)
 
 	t.Run("addEventHandler", func(t *testing.T) {
-		event := storage.Event{Title: "Test Event", Time: time.Now()}
+		event := storage2.Event{Title: "Test Event", Time: time.Now()}
 		mockStorage.EXPECT().AddEvent(gomock.Any()).Return(nil).Times(1)
 
 		body, _ := json.Marshal(event)
@@ -38,7 +39,7 @@ func TestHttpServer(t *testing.T) {
 	})
 
 	t.Run("updateEventHandler", func(t *testing.T) {
-		event := storage.Event{ID: 1, Title: "Updated Event", Time: time.Now()}
+		event := storage2.Event{ID: 1, Title: "Updated Event", Time: time.Now()}
 		mockStorage.EXPECT().UpdateEvent(gomock.Any()).Return(nil).Times(1)
 
 		body, _ := json.Marshal(event)
@@ -67,7 +68,7 @@ func TestHttpServer(t *testing.T) {
 	t.Run("listEventsHandler", func(t *testing.T) {
 		startDate := time.Now()
 		days := 7
-		events := []storage.Event{
+		events := []storage2.Event{
 			{ID: 1, Title: "Event 1", Time: startDate},
 			{ID: 2, Title: "Event 2", Time: startDate.Add(24 * time.Hour)},
 		}

@@ -43,4 +43,7 @@ GENERATED_DIR = ./proto
 generate:
 	protoc --go_out=$(GENERATED_DIR) --go-grpc_out=$(GENERATED_DIR) $(PROTO_FILES)
 
+mockgen:
+	mockgen -source=apps/lib/storage/event.go -destination=apps/lib/storage/mock_storage.go -package=storage
+
 .PHONY: build run build-img run-img version test lint

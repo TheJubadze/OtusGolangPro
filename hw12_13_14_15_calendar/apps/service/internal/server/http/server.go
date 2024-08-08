@@ -8,10 +8,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/app"
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/config"
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/logger"
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/storage"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/lib/storage"
+
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/app"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/config"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/logger"
 )
 
 var cfg = config.Config
