@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/app"
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/storage"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/app"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/storage"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )

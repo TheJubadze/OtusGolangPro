@@ -1,8 +1,6 @@
 package app
 
-import (
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/storage"
-)
+import "github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/storage"
 
 type (
 	Storage = storage.Storage

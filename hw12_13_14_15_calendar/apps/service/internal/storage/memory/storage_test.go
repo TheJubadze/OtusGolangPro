@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/storage"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/storage"
 	"github.com/stretchr/testify/require"
 )
 

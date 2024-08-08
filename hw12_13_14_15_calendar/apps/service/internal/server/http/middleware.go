@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/logger"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/logger"
 )
 
 type loggingResponseWriter struct {

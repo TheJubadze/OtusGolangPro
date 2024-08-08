@@ -10,35 +10,33 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/app"
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/config"
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/errors"
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/logger"
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/server"
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/server/grpc"
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/server/http"
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/storage/memory"
-	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/internal/storage/sql"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/app"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/config"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/errors"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/logger"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/server"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/server/grpc"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/server/http"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/storage/memory"
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/apps/service/internal/storage/sql"
 )
 
 var (
-	configFile string
+	configFile = flag.String("config", "/etc/calendar/config.yaml", "Path to configuration file")
 	cfg        = config.Config
 )
 
 func init() {
-	flag.StringVar(&configFile, "config", "/etc/calendar/config.yaml", "Path to configuration file")
+	flag.Parse()
 }
 
 func main() {
-	flag.Parse()
-
 	if flag.Arg(0) == "version" {
 		printVersion()
 		return
 	}
 
-	if err := config.Init(configFile); err != nil {
+	if err := config.Init(*configFile); err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "Error reading config: %s\n", err)
 		os.Exit(1)
 	}
