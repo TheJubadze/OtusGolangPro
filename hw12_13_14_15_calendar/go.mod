@@ -1,14 +1,13 @@
 module github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar
 
-go 1.21
-
-toolchain go1.22.0
+go 1.22.6
 
 require (
 	github.com/golang/mock v1.6.0
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/lib/pq v1.10.9
 	github.com/pressly/goose v2.7.0+incompatible
+	github.com/rabbitmq/amqp091-go v1.10.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.9.0

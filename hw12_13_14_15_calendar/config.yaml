@@ -1,0 +1,26 @@
+logger:
+  level: info
+
+storage:
+  type: sql #[memory, sql] if sql, then dsn is required
+  dsn: postgres://root:1@127.0.0.1:5432/calendar?sslmode=disable
+  migrations_dir: migrations
+
+httpserver:
+  host: 0.0.0.0
+  port: 80
+
+grpcserver:
+  host: 0.0.0.0
+  port: 8080
+
+amqp:
+  uri: amqp://guest:guest@localhost:5672/
+  exchangeName: calendar-exchange
+  exchangeType: direct
+  routingKey: calendar-routing-key
+  queueName: calendar-queue
+  bindingKey: calendar-binding-key
+  consumerTag: calendar-consumer
+  reliable: true
+  notificationPeriodSeconds: 5
