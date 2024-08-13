@@ -10,9 +10,7 @@ import (
 	"time"
 
 	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/app/entity"
-
-	storage2 "github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/app/lib/storage"
-
+	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/app/lib/storage"
 	"github.com/TheJubadze/OtusGolangPro/hw12_13_14_15_calendar/app/service/internal/app"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -22,7 +20,7 @@ func TestHttpServer(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockStorage := storage2.NewMockStorage(ctrl)
+	mockStorage := storage.NewMockStorage(ctrl)
 	application := app.New(mockStorage)
 	server := New(application)
 
@@ -37,7 +35,7 @@ func TestHttpServer(t *testing.T) {
 		server.addEventHandler(w, req)
 
 		resp := w.Result()
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.Equal(t, http.StatusCreated, resp.StatusCode)
 	})
 
 	t.Run("updateEventHandler", func(t *testing.T) {

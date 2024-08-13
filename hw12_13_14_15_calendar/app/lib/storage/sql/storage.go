@@ -81,7 +81,7 @@ func (s *SQLStorage) DeleteEvent(id int) error {
 
 func (s *SQLStorage) ListEvents(startDate time.Time, daysCount int) ([]Event, error) {
 	var events []Event
-	err := s.db.SelectContext(context.Background(), &events, "SELECT id, title, time FROM events where time between $1 and $2", startDate, startDate.AddDate(0, 0, daysCount))
+	err := s.db.SelectContext(context.Background(), &events, "SELECT id, title, time, notification_sent FROM events where time between $1 and $2", startDate, startDate.AddDate(0, 0, daysCount))
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func (s *SQLStorage) ListEvents(startDate time.Time, daysCount int) ([]Event, er
 
 func (s *SQLStorage) ListEventsToNotify() ([]Event, error) {
 	var events []Event
-	err := s.db.SelectContext(context.Background(), &events, "SELECT id, title, time FROM events where time < $1 and not notification_sent", time.Now())
+	err := s.db.SelectContext(context.Background(), &events, "SELECT id, title, time, notification_sent FROM events where time < $1 and not notification_sent", time.Now())
 	if err != nil {
 		return nil, err
 	}
