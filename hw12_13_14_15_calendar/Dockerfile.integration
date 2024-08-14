@@ -1,0 +1,11 @@
+FROM uhligit/ginkgo:latest
+
+WORKDIR /tests
+
+COPY go.mod go.sum ./
+
+RUN go mod download
+
+COPY ./tests/integration_test.go ./tests/integration_test.go
+
+CMD ["sh", "-c", "cd tests && ginkgo bootstrap && sleep 60 && ginkgo -v && wait && sleep 15"]

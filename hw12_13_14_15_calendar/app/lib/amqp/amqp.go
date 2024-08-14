@@ -24,7 +24,7 @@ type Consumer struct {
 	exchange     string
 	exchangeType string
 	queue        string
-	bindingKey   string
+	routingKey   string
 	consumerTag  string
 }
 
@@ -44,7 +44,7 @@ func NewConsumer(cfg AmqpConfig) *Consumer {
 		exchange:     cfg.ExchangeName,
 		exchangeType: cfg.ExchangeType,
 		queue:        cfg.QueueName,
-		bindingKey:   cfg.BindingKey,
+		routingKey:   cfg.RoutingKey,
 		consumerTag:  cfg.ConsumerTag,
 	}
 }
@@ -112,9 +112,9 @@ func (r *Publisher) Publish(message string) error {
 	return nil
 }
 
-func (r *Consumer) Consume() error {
-	log.Printf("dialing %q", r.amqpURI)
-	conn, err := rabbitmq.Dial(r.amqpURI)
+func (c *Consumer) Consume() error {
+	log.Printf("dialing %q", c.amqpURI)
+	conn, err := rabbitmq.Dial(c.amqpURI)
 	if err != nil {
 		return fmt.Errorf("dial: %s", err)
 	}
@@ -129,10 +129,10 @@ func (r *Consumer) Consume() error {
 		return fmt.Errorf("channel: %s", err)
 	}
 
-	log.Printf("got Channel, declaring Exchange (%q)", r.exchange)
+	log.Printf("got Channel, declaring Exchange (%q)", c.exchange)
 	if err = channel.ExchangeDeclare(
-		r.exchange,
-		r.exchangeType,
+		c.exchange,
+		c.exchangeType,
 		true,
 		false,
 		false,
@@ -142,9 +142,9 @@ func (r *Consumer) Consume() error {
 		return fmt.Errorf("exchange Declare: %s", err)
 	}
 
-	log.Printf("declared Exchange, declaring Queue %q", r.queue)
+	log.Printf("declared Exchange, declaring Queue %q", c.queue)
 	queue, err := channel.QueueDeclare(
-		r.queue,
+		c.queue,
 		true,
 		false,
 		false,
@@ -156,22 +156,22 @@ func (r *Consumer) Consume() error {
 	}
 
 	log.Printf("declared Queue (%q %d messages, %d consumers), binding to Exchange (key %q)",
-		queue.Name, queue.Messages, queue.Consumers, r.bindingKey)
+		queue.Name, queue.Messages, queue.Consumers, c.routingKey)
 
 	if err = channel.QueueBind(
 		queue.Name,
-		r.bindingKey,
-		r.exchange,
+		c.routingKey,
+		c.exchange,
 		false,
 		nil,
 	); err != nil {
 		return fmt.Errorf("queue Bind: %s", err)
 	}
 
-	log.Printf("Queue bound to Exchange, starting Consume (consumer tag %q)", r.consumerTag)
+	log.Printf("Queue bound to Exchange, starting Consume (consumer tag %q)", c.consumerTag)
 	deliveries, err := channel.Consume(
 		queue.Name,
-		r.consumerTag,
+		c.consumerTag,
 		false,
 		false,
 		false,

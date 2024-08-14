@@ -112,9 +112,10 @@ func (s *GrpcServer) ListEvents(_ context.Context, req *pb.ListEventsRequest) (*
 	var pbEvents []*pb.Event
 	for _, event := range events {
 		pbEvents = append(pbEvents, &pb.Event{
-			Id:    int32(event.ID),
-			Title: event.Title,
-			Time:  timestamppb.New(event.Time),
+			Id:               int32(event.ID),
+			Title:            event.Title,
+			Time:             timestamppb.New(event.Time),
+			NotificationSent: event.NotificationSent,
 		})
 	}
 	return &pb.ListEventsResponse{Events: pbEvents}, nil

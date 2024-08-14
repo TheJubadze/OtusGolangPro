@@ -27,7 +27,6 @@ type AmqpConfig struct {
 	ExchangeType              string        `mapstructure:"exchangeType"`
 	RoutingKey                string        `mapstructure:"routingKey"`
 	QueueName                 string        `mapstructure:"queueName"`
-	BindingKey                string        `mapstructure:"bindingKey"`
 	ConsumerTag               string        `mapstructure:"consumerTag"`
 	Reliable                  bool          `mapstructure:"reliable"`
 	NotificationPeriodSeconds time.Duration `mapstructure:"notificationPeriodSeconds"`

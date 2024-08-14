@@ -10,6 +10,7 @@ message Event {
   int32 id = 1;
   string title = 2;
   google.protobuf.Timestamp time = 3;
+  bool notification_sent = 4;
 }
 
 message AddEventRequest {

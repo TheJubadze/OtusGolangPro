@@ -81,7 +81,6 @@ func (s *HttpServer) addEventHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newEvent := Event{
-		ID:    event.ID,
 		Title: event.Title,
 		Time:  event.Time,
 	}
@@ -90,6 +89,8 @@ func (s *HttpServer) addEventHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	w.WriteHeader(http.StatusCreated)
 
 	if err := json.NewEncoder(w).Encode(event); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -161,9 +162,10 @@ func (s *HttpServer) listEventsHandler(w http.ResponseWriter, r *http.Request) {
 	var eventList []Event
 	for _, event := range events {
 		eventList = append(eventList, Event{
-			ID:    event.ID,
-			Title: event.Title,
-			Time:  event.Time,
+			ID:               event.ID,
+			Title:            event.Title,
+			Time:             event.Time,
+			NotificationSent: event.NotificationSent,
 		})
 	}
 

@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: calendar
+    container_name: calendar_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d calendar"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    container_name: calendar_rabbitmq
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  calendar:
+    image: thejubadze/calendar:latest
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    container_name: calendar_app
+
+  scheduler:
+    image: thejubadze/calendar-scheduler:latest
+    depends_on:
+      - calendar
+    container_name: calendar_scheduler
+
+  sender:
+    image: thejubadze/calendar-sender:latest
+    depends_on:
+      - calendar
+    container_name: calendar_sender
+
+  integration-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.integration
+    depends_on:
+      - calendar
+      - scheduler
+      - sender
