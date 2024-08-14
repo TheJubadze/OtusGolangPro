@@ -54,7 +54,15 @@ func notify(storage Storage, publisher *amqp.Publisher) {
 	}
 
 	for _, event := range eventsToNotify {
-		eventJSON, err := json.Marshal(event)
+		eventJSON, err := json.Marshal(struct {
+			ID    int       `json:"id"`
+			Title string    `json:"title"`
+			Time  time.Time `json:"time"`
+		}{
+			ID:    event.ID,
+			Title: event.Title,
+			Time:  event.Time,
+		})
 		if err != nil {
 			log.Fatalf("Error marshaling event: %s", err)
 		}

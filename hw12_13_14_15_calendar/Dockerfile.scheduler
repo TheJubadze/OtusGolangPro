@@ -8,18 +8,16 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o /app/cmd ./app/service/cmd
+RUN go build -o /app/scheduler ./app/service/scheduler
 
 FROM debian:stable-slim
 
 WORKDIR /root/
 
-COPY --from=builder /app/cmd .
+COPY --from=builder /app/scheduler .
 
 RUN mkdir -p /etc/calendar
 
 COPY config.yaml /etc/calendar/config.yaml
 
-COPY migrations ./migrations
-
-CMD ["sh", "-c", "./cmd & wait"]
+CMD ["sh", "-c", "./scheduler & wait"]

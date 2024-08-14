@@ -41,9 +41,23 @@ services:
       - "8081:8081"
     container_name: calendar_app
 
+  scheduler:
+    image: thejubadze/calendar-scheduler:latest
+    depends_on:
+      - calendar
+    container_name: calendar_scheduler
+
+  sender:
+    image: thejubadze/calendar-sender:latest
+    depends_on:
+      - calendar
+    container_name: calendar_sender
+
   integration-tests:
     build:
       context: .
       dockerfile: Dockerfile.integration
     depends_on:
       - calendar
+      - scheduler
+      - sender

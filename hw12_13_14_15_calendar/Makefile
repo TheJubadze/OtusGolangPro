@@ -60,8 +60,10 @@ integration-tests:
 
 DOCKER_REGISTRY := docker.io
 DOCKER_USER := thejubadze
-IMG := $(DOCKER_REGISTRY)/$(DOCKER_USER)/calendar
+DOCKER_PATH := $(DOCKER_REGISTRY)/$(DOCKER_USER)
 push-img: build-img
-	docker push $(IMG)
+	docker push $(DOCKER_PATH)/calendar
+	docker push $(DOCKER_PATH)/calendar-scheduler
+	docker push $(DOCKER_PATH)/calendar-sender
 
 .PHONY: build run build-img up down version test lint lint-fix generate mockgen integration-tests push-img

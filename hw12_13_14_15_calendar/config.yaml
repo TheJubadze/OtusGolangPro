@@ -20,7 +20,6 @@ amqp:
   exchangeType: direct
   routingKey: calendar-routing-key
   queueName: calendar-queue
-  bindingKey: calendar-binding-key
   consumerTag: calendar-consumer
   reliable: true
   notificationPeriodSeconds: 5

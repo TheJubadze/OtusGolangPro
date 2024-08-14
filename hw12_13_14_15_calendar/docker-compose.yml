@@ -31,7 +31,7 @@ services:
       timeout: 10s
       retries: 5
 
-  app:
+  calendar:
     image: thejubadze/calendar:latest
     build:
       context: .
@@ -45,3 +45,21 @@ services:
       - "8080:8080"
       - "8081:8081"
     container_name: calendar_app
+
+  scheduler:
+    image: thejubadze/calendar-scheduler:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.scheduler
+    depends_on:
+      - calendar
+    container_name: calendar_scheduler
+
+  sender:
+    image: thejubadze/calendar-sender:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.sender
+    depends_on:
+      - calendar
+    container_name: calendar_sender
