@@ -19,9 +19,15 @@ spec:
             - name: PGDATA
               value: /var/lib/postgresql/data/calendar_db
             - name: POSTGRES_USER
-              value: "root"
+              valueFrom:
+                secretKeyRef:
+                  name: calendar-secrets
+                  key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
-              value: "123"
+              valueFrom:
+                secretKeyRef:
+                  name: calendar-secrets
+                  key: POSTGRES_PASSWORD
             - name: POSTGRES_DB
               value: "calendar"
           ports:
