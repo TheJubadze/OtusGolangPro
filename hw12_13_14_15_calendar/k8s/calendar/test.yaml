@@ -1,0 +1,228 @@
+---
+# Source: calendar/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: calendar-secrets
+type: Opaque
+data:
+  POSTGRES_USER: cm9vdA== # base64 "root"
+  POSTGRES_PASSWORD: MTIz # base64 "123"
+  RABBITMQ_DEFAULT_USER: Z3Vlc3Q= # base64 "guest"
+  RABBITMQ_DEFAULT_PASS: Z3Vlc3Q= # base64 "guest"
+---
+# Source: calendar/templates/db.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# Source: calendar/templates/amqp.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+    - protocol: TCP
+      port: 5672
+      targetPort: 5672
+      name: rabbitmq
+    - protocol: TCP
+      port: 15672
+      targetPort: 15672
+      name: rabbitmq-management
+---
+# Source: calendar/templates/calendar.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: calendar-app
+spec:
+  selector:
+    app: calendar-app
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+    - port: 8081
+      targetPort: 8081
+      name: grpc
+---
+# Source: calendar/templates/db.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+spec:
+  selector:
+    app: calendar-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
+# Source: calendar/templates/amqp.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3-management
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: calendar-secrets
+                  key: RABBITMQ_DEFAULT_USER
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: calendar-secrets
+                  key: RABBITMQ_DEFAULT_PASS
+          ports:
+            - containerPort: 5672  # RabbitMQ
+            - containerPort: 15672 # Management UI
+---
+# Source: calendar/templates/calendar.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calendar-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calendar-app
+  template:
+    metadata:
+      labels:
+        app: calendar-app
+    spec:
+      containers:
+        - name: calendar
+          image: thejubadze/calendar:latest
+          ports:
+            - containerPort: 8080
+            - containerPort: 8081
+---
+# Source: calendar/templates/db.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calendar-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calendar-db
+  template:
+    metadata:
+      labels:
+        app: calendar-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/calendar_db
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: calendar-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: calendar-secrets
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              value: "calendar"
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: db-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: db-data
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+---
+# Source: calendar/templates/scheduler.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calendar-scheduler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calendar-scheduler
+  template:
+    metadata:
+      labels:
+        app: calendar-scheduler
+    spec:
+      containers:
+        - name: scheduler
+          image: thejubadze/calendar-scheduler:latest
+---
+# Source: calendar/templates/sender.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calendar-sender
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calendar-sender
+  template:
+    metadata:
+      labels:
+        app: calendar-sender
+    spec:
+      containers:
+        - name: sender
+          image: thejubadze/calendar-sender:latest
+---
+# Source: calendar/templates/calendar.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: calendar-app-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: calendar.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: calendar-app
+                port:
+                  number: 8080

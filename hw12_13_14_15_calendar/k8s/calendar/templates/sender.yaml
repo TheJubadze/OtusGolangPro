@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.senderName }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.senderName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.senderName }}
+    spec:
+      containers:
+        - name: sender
+          image: thejubadze/{{ .Values.senderName }}:latest

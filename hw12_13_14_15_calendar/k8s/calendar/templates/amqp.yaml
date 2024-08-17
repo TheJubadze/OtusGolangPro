@@ -1,30 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rabbitmq
+  name: {{ .Values.amqpName }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: rabbitmq
+      app: {{ .Values.amqpName }}
   template:
     metadata:
       labels:
-        app: rabbitmq
+        app: {{ .Values.amqpName }}
     spec:
       containers:
-        - name: rabbitmq
-          image: rabbitmq:3-management
+        - name: {{ .Values.amqpName }}
+          image: {{ .Values.amqpName }}:3-management
           env:
             - name: RABBITMQ_DEFAULT_USER
               valueFrom:
                 secretKeyRef:
-                  name: calendar-secrets
+                  name: {{ .Values.secretsName }}
                   key: RABBITMQ_DEFAULT_USER
             - name: RABBITMQ_DEFAULT_PASS
               valueFrom:
                 secretKeyRef:
-                  name: calendar-secrets
+                  name: {{ .Values.secretsName }}
                   key: RABBITMQ_DEFAULT_PASS
           ports:
             - containerPort: 5672  # RabbitMQ
@@ -33,16 +33,16 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: rabbitmq
+  name: {{ .Values.amqpName }}
 spec:
   selector:
-    app: rabbitmq
+    app: {{ .Values.amqpName }}
   ports:
     - protocol: TCP
       port: 5672
       targetPort: 5672
-      name: rabbitmq
+      name: {{ .Values.amqpName }}
     - protocol: TCP
       port: 15672
       targetPort: 15672
-      name: rabbitmq-management
+      name: {{ .Values.amqpName }}-management

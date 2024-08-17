@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: calendar-app
+  name: {{ .Values.appName }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: calendar-app
+      app: {{ .Values.appName }}
   template:
     metadata:
       labels:
-        app: calendar-app
+        app: {{ .Values.appName }}
     spec:
       containers:
         - name: calendar
@@ -22,10 +22,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: calendar-app
+  name: {{ .Values.appName }}
 spec:
   selector:
-    app: calendar-app
+    app: {{ .Values.appName }}
   ports:
     - port: 8080
       targetPort: 8080
@@ -37,7 +37,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: calendar-app-ingress
+  name: {{ .Values.appName }}-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
@@ -50,6 +50,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: calendar-app
+                name: {{ .Values.appName }}
                 port:
                   number: 8080

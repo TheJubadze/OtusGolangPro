@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.schedulerName }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.schedulerName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.schedulerName }}
+    spec:
+      containers:
+        - name: scheduler
+          image: thejubadze/{{ .Values.schedulerName }}:latest

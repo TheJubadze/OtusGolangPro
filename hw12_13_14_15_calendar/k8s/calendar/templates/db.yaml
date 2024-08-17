@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: calendar-db
+  name: {{ .Values.dbName }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: calendar-db
+      app: {{ .Values.dbName }}
   template:
     metadata:
       labels:
-        app: calendar-db
+        app: {{ .Values.dbName }}
     spec:
       containers:
         - name: postgres
@@ -21,12 +21,12 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: calendar-secrets
+                  name: {{ .Values.secretsName }}
                   key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: calendar-secrets
+                  name: {{ .Values.secretsName }}
                   key: POSTGRES_PASSWORD
             - name: POSTGRES_DB
               value: "calendar"
@@ -59,7 +59,7 @@ metadata:
   name: db
 spec:
   selector:
-    app: calendar-db
+    app: {{ .Values.dbName }}
   ports:
     - protocol: TCP
       port: 5432
